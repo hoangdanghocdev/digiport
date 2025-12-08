@@ -826,13 +826,19 @@ window.addEventListener("load", () => {
   // 1. Khởi tạo Icon
   if (typeof lucide !== "undefined") lucide.createIcons();
 
-  // 2. Load bài viết (Trang Dump)
-  loadPosts();
+  // 2. Load content cho portfolio
+  loadPortfolioContent();
 
-  // 3. Kiểm tra trạng thái đăng nhập
+  // 3. Load bài viết (Trang Dump)
+  loadPosts();
+  
+  // 3.1. Load gems
+  loadGems();
+
+  // 4. Kiểm tra trạng thái đăng nhập
   checkLoginState();
 
-  // 4. REAL-TIME DATE SETUP (GMT+7)
+  // 5. REAL-TIME DATE SETUP (GMT+7)
   setupRealTimeDates();
 });
 
@@ -1063,6 +1069,61 @@ function submitBooking(e) {
    ========================================= */
 const defaultPosts = [{ id: 1, text: "Welcome to my portfolio!", likes: 5 }];
 
+const defaultGems = [
+    { id: 1, title: "The Coffee House", category: "cafe", desc: "Best place for deep work. Great cold brew.", img: "" },
+    { id: 2, title: "Pizza 4P's", category: "restaurant", desc: "Amazing crab pasta. Good for dating.", img: "" }
+];
+
+function loadGems() {
+    const gems = JSON.parse(localStorage.getItem("gems")) || defaultGems;
+    const grid = document.getElementById("gemsGrid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+    gems.forEach(gem => {
+        const card = document.createElement("div");
+        card.className = `gem-card ${gem.category}`;
+        card.innerHTML = `
+            <div class="gem-img" style="background-image: url(${gem.img || 'https://via.placeholder.com/300x200.png?text=Image'})"></div>
+            <div class="gem-info">
+                <h4>${gem.title}</h4>
+                <span class="tag">${gem.category}</span>
+                <p>${gem.desc}</p>
+                ${localStorage.getItem("isAdmin") === "true" ? `<button class="delete-btn" onclick="deleteGem(${gem.id})">Delete</button>` : ""}
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function addGem() {
+    const title = document.getElementById("gemTitle").value;
+    const category = document.getElementById("gemCategory").value;
+    const desc = document.getElementById("gemDesc").value;
+    const img = document.getElementById("gemImage").value;
+
+    if (!title || !desc) return alert("Please fill in all fields.");
+
+    let gems = JSON.parse(localStorage.getItem("gems")) || defaultGems;
+    gems.push({ id: Date.now(), title, category, desc, img });
+    localStorage.setItem("gems", JSON.stringify(gems));
+
+    loadGems(); // Refresh grid
+    // Clear form
+    document.getElementById("gemTitle").value = "";
+    document.getElementById("gemDesc").value = "";
+    document.getElementById("gemImage").value = "";
+}
+
+function deleteGem(id) {
+    if (!confirm("Are you sure you want to delete this gem?")) return;
+    let gems = JSON.parse(localStorage.getItem("gems"));
+    gems = gems.filter(g => g.id !== id);
+    localStorage.setItem("gems", JSON.stringify(gems));
+    loadGems();
+}
+
+
 function loadPosts() {
   let posts = JSON.parse(localStorage.getItem("dumpPosts")) || defaultPosts;
   const container = document.getElementById("feedOutput");
@@ -1141,6 +1202,36 @@ function filterGems(type) {
 }
 
 /* =========================================
+   6. PORTFOLIO EDITING
+   ========================================= */
+function loadPortfolioContent() {
+  const editableElements = document.querySelectorAll(".editable");
+  editableElements.forEach((el) => {
+    const key = el.getAttribute("data-key");
+    const savedContent = localStorage.getItem(key);
+    if (savedContent) {
+      el.innerHTML = savedContent;
+    }
+  });
+}
+
+function savePortfolioContent() {
+  const editableElements = document.querySelectorAll(".editable");
+  editableElements.forEach((el) => {
+    const key = el.getAttribute("data-key");
+    localStorage.setItem(key, el.innerHTML);
+  });
+  alert("Portfolio content saved successfully!");
+}
+
+function makePortfolioEditable() {
+  document.querySelectorAll(".editable").forEach((el) => {
+    el.setAttribute("contenteditable", "true");
+  });
+  document.getElementById("portfolioTools").classList.remove("hidden");
+}
+
+/* =========================================
    5. AUTHENTICATION & ADMIN
    ========================================= */
 function handleAuthClick() {
@@ -1155,6 +1246,15 @@ function handleAuthClick() {
 function checkLoginState() {
   const isAuth = localStorage.getItem("isAdmin") === "true";
   const authBtn = document.getElementById("authBtn");
+
+  if (isAuth) {
+    makePortfolioEditable(); // Enable editing
+  }
+
+  if (document.getElementById("adminAddGem"))
+    document.getElementById("adminAddGem").className = isAuth
+      ? "admin-card"
+      : "hidden";
 
   if (document.getElementById("adminPostBox"))
     document.getElementById("adminPostBox").className = isAuth

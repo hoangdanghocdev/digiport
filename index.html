@@ -395,24 +395,34 @@
             Workspace
           </button>
         </div>
-        <div class="gems-grid" id="gemsGrid">
-          <div class="gem-card cafe">
-            <div class="gem-img" style="background-color: #ddd">Image</div>
-            <div class="gem-info">
-              <h4>The Coffee House</h4>
-              <span class="tag">Cafe</span>
-              <p>Best place for deep work. Great cold brew.</p>
-            </div>
+
+        <div id="adminAddGem" class="admin-card hidden" style="margin-bottom: 20px;">
+          <h3><i data-lucide="plus-circle"></i> Add New Gem</h3>
+          <div class="input-group-modern">
+            <label>TITLE</label>
+            <input type="text" id="gemTitle" placeholder="e.g., The Coffee House">
           </div>
-          <div class="gem-card restaurant">
-            <div class="gem-img" style="background-color: #ddd">Image</div>
-            <div class="gem-info">
-              <h4>Pizza 4P's</h4>
-              <span class="tag">Restaurant</span>
-              <p>Amazing crab pasta. Good for dating.</p>
-            </div>
+          <div class="input-group-modern">
+            <label>CATEGORY</label>
+            <select id="gemCategory">
+              <option value="cafe">Café</option>
+              <option value="restaurant">Restaurant</option>
+              <option value="workspace">Workspace</option>
+            </select>
           </div>
+           <div class="input-group-modern">
+            <label>DESCRIPTION</label>
+            <textarea id="gemDesc" placeholder="e.g., Best place for deep work."></textarea>
+          </div>
+           <div class="input-group-modern">
+            <label>IMAGE URL</label>
+            <input type="text" id="gemImage" placeholder="https://example.com/image.png">
+          </div>
+          <button onclick="addGem()" class="signin-btn-modern" style="width: 100%;">Add Gem</button>
         </div>
+
+        <div class="gems-grid" id="gemsGrid">
+          </div>
       </section>
 
       <section id="cys" class="page-section hidden">
