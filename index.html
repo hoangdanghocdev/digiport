@@ -581,12 +581,286 @@
       </section>
 
       <section id="signin" class="page-section hidden">
-        <div class="login-card">
-          <h2>Admin Access</h2>
-          <input type="text" id="username" placeholder="Username" />
-          <input type="password" id="password" placeholder="Password" />
-          <button onclick="attemptLogin()">Login</button>
-          <p id="loginMsg" class="error"></p>
+        <!-- <div class="signin-wrapper">
+          <div id="loginFormCard" class="login-card-new">
+            <div class="login-header">
+              <div class="login-icon-box">
+                <i data-lucide="shield-check"></i>
+              </div>
+              <h2>Welcome Back</h2>
+              <p>
+                Please enter your admin credentials to access the dashboard.
+              </p>
+            </div>
+
+            <div class="login-body">
+              <div class="input-group-new">
+                <label>USERNAME</label>
+                <div class="input-wrapper-new">
+                  <i data-lucide="user" class="input-icon-new"></i>
+                  <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter your username"
+                  />
+                </div>
+              </div>
+
+              <div class="input-group-new">
+                <label>PASSWORD</label>
+                <div class="input-wrapper-new">
+                  <i data-lucide="lock" class="input-icon-new"></i>
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                  />
+                </div>
+              </div>
+
+              <button onclick="attemptLogin()" class="signin-submit-btn">
+                Sign In to Dashboard
+              </button>
+            </div>
+          </div>
+
+          <div id="adminDashboard" class="dashboard-container hidden">
+            <div class="dash-header">
+              <h2>👋 Admin Dashboard</h2>
+              <button
+                onclick="handleAuthClick()"
+                style="
+                  background: #ef4444;
+                  color: white;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  font-weight: 600;
+                "
+              >
+                Logout
+              </button>
+            </div>
+
+            <div class="dash-grid">
+              <div class="dash-card">
+                <h3>📅 Schedule Manager</h3>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px">
+                  Block busy slots to prevent bookings.
+                </p>
+
+                <div
+                  style="
+                    background: #f9fafb;
+                    padding: 15px;
+                    border-radius: 8px;
+                    border: 1px solid #eee;
+                  "
+                >
+                  <input
+                    type="date"
+                    id="blockDate"
+                    style="
+                      width: 100%;
+                      padding: 10px;
+                      border: 1px solid #ddd;
+                      border-radius: 6px;
+                      margin-bottom: 10px;
+                    "
+                  />
+                  <div style="display: flex; gap: 10px; margin-bottom: 10px">
+                    <input
+                      type="time"
+                      id="blockStart"
+                      style="
+                        flex: 1;
+                        padding: 10px;
+                        border: 1px solid #ddd;
+                        border-radius: 6px;
+                      "
+                    />
+                    <input
+                      type="time"
+                      id="blockEnd"
+                      style="
+                        flex: 1;
+                        padding: 10px;
+                        border: 1px solid #ddd;
+                        border-radius: 6px;
+                      "
+                    />
+                  </div>
+                  <button
+                    onclick="addBusySlot()"
+                    style="
+                      width: 100%;
+                      padding: 10px;
+                      background: var(--primary);
+                      color: white;
+                      border: none;
+                      border-radius: 6px;
+                      cursor: pointer;
+                      font-weight: bold;
+                    "
+                  >
+                    Block Slot
+                  </button>
+                </div>
+
+                <hr
+                  style="margin: 20px 0; border: 0; border-top: 1px solid #eee"
+                />
+                <h4 style="margin-bottom: 10px">Blocked Slots:</h4>
+                <ul id="busyList" class="simple-list"></ul>
+              </div>
+
+              <div class="dash-card">
+                <h3>📩 Booking Requests</h3>
+                <div id="requestList" style="margin-top: 15px"></div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <div id="loginFormCard" class="signin-wrapper">
+          <div class="login-card-modern">
+            <div class="login-header">
+              <div class="icon-box-modern">
+                <i data-lucide="shield-check"></i>
+              </div>
+              <h2>Admin Portal</h2>
+              <p>Welcome back, Hoang. Please verify your identity.</p>
+            </div>
+
+            <div class="login-body">
+              <div class="input-group-modern">
+                <label>USERNAME</label>
+                <div class="input-field-wrapper">
+                  <i data-lucide="user" class="field-icon"></i>
+                  <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter username"
+                  />
+                </div>
+              </div>
+
+              <div class="input-group-modern">
+                <label>PASSWORD</label>
+                <div class="input-field-wrapper">
+                  <i data-lucide="lock" class="field-icon"></i>
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                  />
+                </div>
+              </div>
+
+              <button onclick="attemptLogin()" class="signin-btn-modern">
+                Access Dashboard
+                <i data-lucide="arrow-right" style="width: 18px"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="adminDashboard" class="dashboard-container hidden">
+          <div class="dash-header">
+            <h2>👋 Admin Dashboard</h2>
+            <button
+              onclick="handleAuthClick()"
+              style="
+                background: #ef4444;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+              "
+            >
+              Logout
+            </button>
+          </div>
+
+          <div class="dash-grid">
+            <div class="dash-card">
+              <h3>📅 Schedule Manager</h3>
+              <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px">
+                Block busy dates/hours.
+              </p>
+
+              <div
+                style="
+                  background: #f9fafb;
+                  padding: 15px;
+                  border-radius: 8px;
+                  border: 1px solid #eee;
+                "
+              >
+                <input
+                  type="date"
+                  id="blockDate"
+                  style="
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    margin-bottom: 10px;
+                  "
+                />
+                <div style="display: flex; gap: 10px; margin-bottom: 10px">
+                  <input
+                    type="time"
+                    id="blockStart"
+                    style="
+                      flex: 1;
+                      padding: 10px;
+                      border: 1px solid #ddd;
+                      border-radius: 6px;
+                    "
+                  />
+                  <input
+                    type="time"
+                    id="blockEnd"
+                    style="
+                      flex: 1;
+                      padding: 10px;
+                      border: 1px solid #ddd;
+                      border-radius: 6px;
+                    "
+                  />
+                </div>
+                <button
+                  onclick="addBusySlot()"
+                  style="
+                    width: 100%;
+                    padding: 10px;
+                    background: var(--primary);
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: bold;
+                  "
+                >
+                  Block Slot
+                </button>
+              </div>
+
+              <hr
+                style="margin: 20px 0; border: 0; border-top: 1px solid #eee"
+              />
+              <h4 style="margin-bottom: 10px">Blocked Slots:</h4>
+              <ul id="busyList" class="simple-list"></ul>
+            </div>
+
+            <div class="dash-card">
+              <h3>📩 Booking Requests</h3>
+              <div id="requestList" style="margin-top: 15px"></div>
+            </div>
+          </div>
         </div>
       </section>
     </main>

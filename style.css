@@ -885,3 +885,151 @@ footer {
   margin-top: 5px;
   text-decoration: underline;
 }
+
+/* --- MODERN SIGN IN DESIGN (STYLE ẢNH 2) --- */
+
+/* Wrapper căn giữa màn hình */
+.signin-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh; /* Chiều cao để căn giữa đẹp */
+  padding: 20px;
+}
+
+/* Card chính */
+.login-card-modern {
+  background: white;
+  width: 100%;
+  max-width: 400px; /* Độ rộng chuẩn */
+  padding: 40px 30px;
+  border-radius: 24px; /* Bo góc tròn trịa hiện đại */
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.1); /* Bóng đổ sâu, mềm */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Header (Icon + Text) */
+.login-header {
+  margin-bottom: 30px;
+}
+
+.icon-box-modern {
+  width: 64px;
+  height: 64px;
+  background: #eff6ff; /* Nền xanh rất nhạt */
+  color: var(--accent);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.1);
+}
+.icon-box-modern svg {
+  width: 32px;
+  height: 32px;
+}
+
+.login-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.login-header p {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  line-height: 1.5;
+}
+
+/* Input Fields Style Mới */
+.login-body {
+  text-align: left;
+}
+
+.input-group-modern {
+  margin-bottom: 20px;
+}
+
+.input-group-modern label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.input-field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  left: 14px;
+  color: #9ca3af;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.input-field-wrapper input {
+  width: 100%;
+  padding: 14px 14px 14px 45px; /* Padding trái lớn để né icon */
+  border: 2px solid #f3f4f6; /* Viền nhạt mặc định */
+  background: #f9fafb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* Hiệu ứng khi bấm vào input */
+.input-field-wrapper input:focus {
+  background: white;
+  border-color: var(--accent); /* Viền xanh khi focus */
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+.input-field-wrapper input:focus + .field-icon {
+  color: var(--accent); /* Icon đổi màu theo */
+}
+
+/* Nút Submit Gradient */
+.signin-btn-modern {
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #1e3a8a 100%
+  ); /* Gradient giống Hero */
+  color: white;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.signin-btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(30, 58, 138, 0.4);
+}
+
+.signin-btn-modern:active {
+  transform: translateY(0);
+}
