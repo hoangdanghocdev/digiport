@@ -118,34 +118,80 @@ main {
   }
 }
 
-/* 2. Hero Banner (Màu xanh đậm như ảnh) */
+/* --- HERO SECTION (DESIGN THEO ẢNH 2) --- */
+
 .hero-card {
-  background: linear-gradient(
-    90deg,
-    #0f172a 0%,
-    #1e3a8a 100%
-  ); /* Màu Navy đậm */
+  /* Gradient chéo (135deg) tạo chiều sâu hơn là 90deg phẳng */
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
   color: white;
-  padding: 40px;
-  border-radius: 16px;
-  margin-bottom: 30px;
-  box-shadow: 0 10px 20px rgba(30, 58, 138, 0.15);
-}
-.hero-content h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-.hero-content h2 {
-  font-size: 1rem;
-  font-weight: 500;
-  opacity: 0.9;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  padding: 45px 30px; /* Tăng padding trên dưới */
+  border-radius: 20px; /* Bo tròn mềm mại hơn */
+  margin-bottom: 35px;
+
+  /* Hiệu ứng bóng đổ mềm và sâu hơn */
+  box-shadow: 0 15px 30px -5px rgba(30, 58, 138, 0.3);
+
+  /* CĂN GIỮA TOÀN BỘ NỘI DUNG (Điểm khác biệt chính so với Ảnh 1) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Viền mờ sang trọng */
 }
 
+.hero-content h1 {
+  font-size: 2.5rem; /* Chữ to hơn */
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: -0.5px; /* Thu hẹp khoảng cách chữ cái cho tiêu đề lớn */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Bóng chữ nhẹ */
+}
+
+.hero-content h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #93c5fd; /* Màu xanh nhạt thay vì trắng mờ -> Tương phản tốt hơn */
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 2px; /* Khoảng cách rộng tạo cảm giác thoáng */
+}
+
+/* THIẾT KẾ CÁC BADGE LIÊN HỆ (CONTACT PILLS) */
+.contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Căn giữa các mục */
+  gap: 12px;
+}
+
+.contact-info span {
+  /* Hiệu ứng kính (Glassmorphism) */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  padding: 8px 16px;
+  border-radius: 30px; /* Bo tròn hình viên thuốc */
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.contact-info span:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px); /* Nổi lên nhẹ khi di chuột */
+}
+
+.contact-info i {
+  width: 16px;
+  height: 16px;
+  opacity: 0.9;
+}
 /* Contact info badges */
 .contact-info {
   display: flex;
