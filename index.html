@@ -425,7 +425,7 @@
           </div>
       </section>
 
-      <section id="cys" class="page-section hidden">
+      <!-- <section id="cys" class="page-section hidden">
         <div class="cys-container">
           <div class="cys-tabs">
             <button
@@ -587,7 +587,183 @@
               <i data-lucide="send"></i> Confirm Booking
             </button>
           </form>
+        </div> -->
+        <section id="cys" class="page-section hidden">
+    
+    <div id="cysAdminPanel" class="hidden">
+        
+        <div class="admin-panel-header">
+            <div class="header-left">
+                <h3><i data-lucide="layout-dashboard"></i> Admin Console</h3>
+                <p>Schedule & Booking Management</p>
+            </div>
+            <div class="header-right">
+                <div class="stat-badge">
+                    <span id="statPending" style="color:#D97706">0</span> Pending
+                </div>
+            </div>
         </div>
+
+        <div class="admin-grid-layout">
+            
+            <div class="admin-card block-card">
+                <div class="card-head red-head">
+                    <h4>⛔ Busy Time</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mode-toggle">
+                        <label><input type="radio" name="blockMode" value="time" checked onchange="toggleBlockMode()"> Hours</label>
+                        <label><input type="radio" name="blockMode" value="date" onchange="toggleBlockMode()"> Days</label>
+                    </div>
+
+                    <div class="block-inputs">
+                        <div id="dateInputGroup">
+                            <label>Date</label>
+                            <input type="date" id="adminBlockDate" class="input-sm">
+                        </div>
+                        <div id="rangeInputGroup" class="hidden">
+                            <label>From - To</label>
+                            <div style="display:flex; gap:5px">
+                                <input type="date" id="adminBlockFrom" class="input-sm">
+                                <input type="date" id="adminBlockTo" class="input-sm">
+                            </div>
+                        </div>
+                        <div id="timeInputGroup">
+                            <div class="row-sm">
+                                <div><label>Start</label><input type="time" id="adminBlockStart" class="input-sm"></div>
+                                <div><label>End</label><input type="time" id="adminBlockEnd" class="input-sm"></div>
+                            </div>
+                        </div>
+                        <div style="margin-top:8px">
+                            <label>Reason</label>
+                            <input type="text" id="adminBlockReason" class="input-sm" placeholder="e.g. Meeting">
+                        </div>
+                        <button onclick="adminAddBusySlot()" class="btn-block">Confirm Block</button>
+                    </div>
+
+                    <div class="blocked-list-container">
+                        <div class="list-label">Blocked Slots:</div>
+                        <ul id="busyList" class="scroll-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card request-card">
+                <div class="card-head blue-head">
+                    <h4>📩 Requests</h4>
+                    <div class="mini-tabs">
+                        <button onclick="renderAdminRequests('Pending')" id="tabPending" class="tab-sm active">Pending</button>
+                        <button onclick="renderAdminRequests('Approved')" id="tabApproved" class="tab-sm">Approved</button>
+                        <button onclick="renderAdminRequests('Denied')" id="tabDenied" class="tab-sm">Denied</button>
+                    </div>
+                </div>
+                <div class="card-body no-pad">
+                    <div id="adminRequestList" class="request-scroll-area"></div>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="guest-divider"><span>Guest View Below</span></div>
+    </div>
+
+
+    <div id="guestView" class="cys-container">
+        
+        <h2 style="text-align:center; color:var(--primary); margin-bottom:20px;">CHECK AVAILABILITY</h2>
+
+        <div class="cys-tabs">
+            <button onclick="setCysTypeNew('inday')" id="btnIndayNew" class="cys-tab active">
+                <i data-lucide="clock"></i> In-Day Event
+            </button>
+            <button onclick="setCysTypeNew('multiday')" id="btnMultiNew" class="cys-tab">
+                <i data-lucide="calendar"></i> Multi-Day Event
+            </button>
+        </div>
+
+        <div class="cys-inputs">
+            <div id="indayInputNew">
+                <div class="input-group full-width">
+                    <label>DATE</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="calendar" class="input-icon"></i>
+                        <input type="date" id="checkDateNew" onchange="checkAvailabilityNew()">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group">
+                        <label>START TIME</label>
+                        <div class="input-wrapper">
+                            <input type="time" id="startTimeNew" value="09:00" onchange="checkAvailabilityNew()">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>END TIME</label>
+                        <div class="input-wrapper">
+                            <input type="time" id="endTimeNew" value="10:00" onchange="checkAvailabilityNew()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="multiInputNew" class="hidden">
+                <div class="row">
+                    <div class="input-group">
+                        <label>FROM DATE</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="calendar" class="input-icon"></i>
+                            <input type="date" id="startDateNew" onchange="checkAvailabilityNew()">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>TO DATE</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="calendar" class="input-icon"></i>
+                            <input type="date" id="endDateNew" onchange="checkAvailabilityNew()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="invalidTimeBoxNew" class="status-box status-busy hidden" style="margin-bottom: 20px">
+            <div style="color: #dc2626"><i data-lucide="alert-circle" class="status-icon"></i></div>
+            <div class="status-content" style="color: #b91c1c"><h4>INVALID TIME</h4><p>Check inputs.</p></div>
+        </div>
+        <div id="availabilityResultNew" class="status-box hidden"></div>
+
+        <form id="bookingFormNew" class="cys-form hidden" onsubmit="submitBookingNew(event)">
+            <div class="row">
+                <div class="input-group">
+                    <label>FULL NAME <span style="color: red">*</span></label>
+                    <input type="text" id="bookNameNew" placeholder="Your Name" required>
+                </div>
+                <div class="input-group">
+                    <label>PHONE / CONTACT <span style="color: red">*</span></label>
+                    <input type="text" id="bookPhoneNew" placeholder="Phone" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>CONTACT PLATFORM</label>
+                <input type="text" id="contactPlatformNew" placeholder="e.g. Messenger Link">
+            </div>
+            <div class="input-group">
+                <label>PURPOSE</label>
+                <div class="input-wrapper">
+                    <select id="reasonSelectNew"><option value="" disabled selected>Select Reason...</option></select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>LOCATION LINK</label>
+                <div class="input-wrapper">
+                    <i data-lucide="map-pin" class="input-icon"></i>
+                    <input type="url" id="locationLinkNew" placeholder="Paste Google Maps Link">
+                </div>
+            </div>
+            <button type="submit" class="confirm-btn"><i data-lucide="send"></i> Confirm Booking</button>
+        </form>
+    </div>
+</section>
       </section>
 
       <section id="signin" class="page-section hidden">
@@ -768,7 +944,7 @@
               </div>
 
               <button onclick="attemptLogin()" class="signin-btn-modern">
-                Access Dashboard
+                Sign In
                 <i data-lucide="arrow-right" style="width: 18px"></i>
               </button>
             </div>

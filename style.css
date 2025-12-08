@@ -1033,3 +1033,242 @@ footer {
 .signin-btn-modern:active {
   transform: translateY(0);
 }
+/* --- ADMIN DASHBOARD STYLES --- */
+#cysAdminPanel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* Header */
+.admin-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e2e8f0;
+}
+.header-left h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-left p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+.stat-badge {
+  background: #fff;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+.stat-badge span {
+  font-size: 1rem;
+  margin-right: 4px;
+}
+/* Grid 2 Cột */
+.admin-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .admin-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+/* Cards */
+.admin-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+.red-head {
+  border-top: 3px solid #ef4444;
+}
+.blue-head {
+  border-top: 3px solid var(--accent);
+}
+
+.card-head {
+  padding: 10px 15px;
+  background: #fff;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-head h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-dark);
+}
+.card-body {
+  padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.card-body.no-pad {
+  padding: 0;
+}
+/* Form Elements */
+.mode-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  background: #fff1f2;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+}
+.mode-toggle label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #991b1b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.input-sm {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  outline: none;
+  background: #f8fafc;
+  margin-top: 2px;
+}
+.row-sm {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.row-sm > div {
+  flex: 1;
+}
+
+.btn-block {
+  width: 100%;
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.btn-block:hover {
+  background: #dc2626;
+}
+/* Scrollable Lists */
+.blocked-list-container {
+  margin-top: 15px;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.list-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.scroll-list {
+  list-style: none;
+  overflow-y: auto;
+  max-height: 150px;
+  border: 1px solid #f1f5f9;
+  border-radius: 6px;
+  padding: 0;
+}
+.scroll-list li {
+  padding: 6px 10px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Request Section */
+.mini-tabs {
+  display: flex;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 4px;
+}
+.tab-sm {
+  border: none;
+  background: transparent;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.tab-sm.active {
+  background: white;
+  color: var(--accent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.request-scroll-area {
+  overflow-y: auto;
+  height: 350px;
+  background: #f8fafc;
+  padding: 10px;
+}
+.guest-divider {
+  text-align: center;
+  margin-top: 25px;
+  position: relative;
+}
+.guest-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #e2e8f0;
+  z-index: 0;
+}
+.guest-divider span {
+  position: relative;
+  z-index: 1;
+  background: #f8fafc;
+  padding: 0 10px;
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
