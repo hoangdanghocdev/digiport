@@ -241,13 +241,8 @@ function adminAddBusySlot() {
     slot.endDate = d2;
   }
 
-  // Code CŨ:
-  // const slots = JSON.parse(localStorage.getItem('busySlots')) || [];
-  // slots.push(slot); localStorage.setItem('busySlots', JSON.stringify(slots));
-
   // Code MỚI (Dùng DB):
   DB.BusySlots.add(slot);
-  localStorage.setItem("busySlots", JSON.stringify(slots));
 
   alert("Blocked Successfully!");
   renderBusyList();
@@ -285,19 +280,38 @@ function adminAddBusySlot() {
 // }
 function renderBusyList() {
   const list = document.getElementById("busyList");
-  // Lấy dữ liệu từ DB
+  if (!list) return;
   const slots = DB.BusySlots.getAll();
 
-  // ... code render HTML giữ nguyên ...
+  if (slots.length === 0) {
+    list.innerHTML = `<li style="text-align:center;color:#999;font-size:0.8rem">No blocked slots.</li>`;
+    return;
+  }
+
+  list.innerHTML = slots
+    .map((s) => {
+      // Hiển thị khác nhau tùy loại chặn
+      let info =
+        s.mode === "date"
+          ? `<span class="tag tag-date">RANGE</span> ${s.startDate} ➝ ${s.endDate}`
+          : `<span class="tag tag-time">TIME</span> ${s.date} (${formatTime24(s.start)}-${formatTime24(s.end)})`;
+
+      return `
+            <li>
+                <div style="flex:1">
+                    <div style="font-weight:600;">${info}</div>
+                    <div style="color:#666; font-size:0.75rem;">Reason: ${s.reason}</div>
+                </div>
+                <span onclick="removeBusy(${s.id})" style="color:var(--red); cursor:pointer; font-weight:bold; font-size:1.1rem;">&times;</span>
+            </li>
+        `;
+    })
+    .join("");
 }
 
 function removeBusy(id) {
   if (!confirm("Unblock this slot?")) return;
-  const slots = JSON.parse(localStorage.getItem("busySlots")) || [];
-  localStorage.setItem(
-    "busySlots",
-    JSON.stringify(slots.filter((s) => s.id !== id))
-  );
+  DB.BusySlots.remove(id);
   renderBusyList();
 }
 
@@ -305,14 +319,13 @@ function removeBusy(id) {
 
 function renderAdminRequests(folder) {
   currentFolder = folder;
+  const list = DB.Requests.getAll();
 
   // Update Tabs UI
   ["Pending", "Approved", "Denied"].forEach((t) => {
     document.getElementById(`tab${t}`).className =
-      t === folder ? "tab-pill active" : "tab-pill";
+      t === folder ? "tab-sm active" : "tab-sm";
   });
-
-  const list = JSON.parse(localStorage.getItem("requests")) || [];
 
   // Update Header Stats
   if (document.getElementById("statPending"))
@@ -341,7 +354,12 @@ function renderAdminRequests(folder) {
                 <div class="req-name-row">${r.name}</div>
                 <div class="req-meta-row">
                     <span class="badge-time">${r.date}</span>
-                    <span>${r.time}</span>
+                    let timeDisplay = r.time;
+                    if (timeDisplay !== "All Day" && timeDisplay.includes(' - ')) {
+                      const [start, end] = timeDisplay.split(" - ");
+                      timeDisplay = `${formatTime24(start)} - ${formatTime24(end)}`;
+                    }
+                    <span>${timeDisplay}</span>
                 </div>
                 <span class="req-reason">"${r.reason}" • 📞 ${r.phone}</span>
                 ${
@@ -481,7 +499,7 @@ function checkAvailabilityNew() {
   }
 
   // B. Check Trùng Lịch (Overlap Algorithm)
-  const busySlots = JSON.parse(localStorage.getItem("busySlots")) || [];
+  const busySlots = DB.BusySlots.getAll();
   let conflict = null;
 
   for (let s of busySlots) {
@@ -568,21 +586,47 @@ function checkAvailabilityNew() {
 function submitBookingNew(e) {
   e.preventDefault();
   const req = {
+    id: Date.now(),
     name: document.getElementById("bookNameNew").value,
-    // ... lấy các value khác ...
+    phone: document.getElementById("bookPhoneNew").value,
+    platform: document.getElementById("contactPlatformNew").value,
+    reason: document.getElementById("reasonSelectNew").value,
+    location: document.getElementById("locationLinkNew").value,
+    date:
+      cysTypeNew === "inday"
+        ? document.getElementById("checkDateNew").value
+        : `${document.getElementById("startDateNew").value} to ${
+            document.getElementById("endDateNew").value
+          }`,
+    time:
+      cysTypeNew === "inday"
+        ? `${document.getElementById("startTimeNew").value} - ${
+            document.getElementById("endTimeNew").value
+          }`
+        : "All Day",
     status: "Pending",
   };
 
-  // Lưu vào DB
   DB.Requests.add(req);
 
   alert("✅ Sent! Waiting for Admin approval.");
-  // ... reset form ...
+  e.target.reset();
+  setCysTypeNew(cysTypeNew);
+
+  // Nếu đang là Admin thì cập nhật list ngay
+  if (localStorage.getItem("isAdmin") === "true")
+    renderAdminRequests("Pending");
 }
 
 /* =========================================
    6. HELPER FUNCTIONS
    ========================================= */
+function formatTime24(timeStr) {
+  if (!timeStr || !timeStr.includes(':')) return timeStr;
+  const [hour, minute] = timeStr.split(':');
+  return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+}
+
 function setupRealTimeDatesNew() {
   const d = new Date(
     new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
@@ -620,9 +664,9 @@ function setupRealTimeDatesNew() {
 function setCysTypeNew(t) {
   cysTypeNew = t;
   document.getElementById("btnIndayNew").className =
-    t === "inday" ? "cys-tab-new active" : "cys-tab-new";
+    t === "inday" ? "cys-tab active" : "cys-tab";
   document.getElementById("btnMultiNew").className =
-    t === "multiday" ? "cys-tab-new active" : "cys-tab-new";
+    t === "multiday" ? "cys-tab active" : "cys-tab";
   document.getElementById("indayInputNew").className =
     t === "inday" ? "" : "hidden";
   document.getElementById("multiInputNew").className =
@@ -664,9 +708,7 @@ function showPage(pageId) {
 
 // Giữ lại các hàm cũ cho Gems và Dump nếu cần
 function renderGems(filter = "all") {
-  const list = JSON.parse(localStorage.getItem("myGems")) || [
-    { id: 1, name: "The Coffee House", type: "cafe", desc: "Best work spot" },
-  ];
+  const list = DB.Gems.getAll();
   const grid = document.getElementById("gemsGrid");
   if (!grid) return;
   grid.innerHTML = "";
@@ -686,19 +728,15 @@ function renderGems(filter = "all") {
 function addGem() {
   const n = document.getElementById("gemName").value;
   if (!n) return;
-  const g = JSON.parse(localStorage.getItem("myGems")) || [];
-  g.push({
-    id: Date.now(),
+  DB.Gems.add({
     name: n,
     type: document.getElementById("gemType").value,
     desc: document.getElementById("gemDesc").value,
   });
-  localStorage.setItem("myGems", JSON.stringify(g));
   renderGems();
 }
 function delGem(id) {
-  const g = JSON.parse(localStorage.getItem("myGems")) || [];
-  localStorage.setItem("myGems", JSON.stringify(g.filter((x) => x.id !== id)));
+  DB.Gems.remove(id);
   renderGems();
 }
 function filterGems(t) {
