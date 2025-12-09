@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hoang Nang Nguyen | Portfolio</title>
     <link rel="stylesheet" href="style.css" />
+
     <script src="https://unpkg.com/lucide@latest"></script>
   </head>
   <body>
@@ -629,18 +630,25 @@
                             </div>
                         </div>
                         <div id="timeInputGroup">
-                            <div class="row-sm">
-                                <div>
-                                    <label>Start</label>
-                                    <select id="adminBlockStart" class="input-sm"></select>
-                                </div>
-                                <div>
-                                    <label>End</label>
-                                    <select id="adminBlockEnd" class="input-sm"></select>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="margin-top:8px">
+    <label style="font-size:0.75rem; font-weight:700; color:#64748B; margin-bottom:5px; display:block;">BUSY SLOT</label>
+    <div class="unified-time-box admin-style">
+        <div class="time-part">
+            <div class="time-capsule">
+                <select id="adminStartHour"></select>
+                <span class="colon">:</span>
+                <select id="adminStartMin"></select>
+            </div>
+        </div>
+        <div class="time-arrow"><i data-lucide="minus"></i></div>
+        <div class="time-part">
+            <div class="time-capsule">
+                <select id="adminEndHour"></select>
+                <span class="colon">:</span>
+                <select id="adminEndMin"></select>
+            </div>
+        </div>
+    </div>
+</div>                        <div style="margin-top:8px">
                             <label>Reason</label>
                             <input type="text" id="adminBlockReason" class="input-sm" placeholder="e.g. Meeting">
                         </div>
@@ -697,20 +705,32 @@
                         <input type="date" id="checkDateNew" onchange="checkAvailabilityNew()">
                     </div>
                 </div>
-                <div class="row">
-    <div class="input-group">
-        <label>START TIME</label>
-        <div class="input-wrapper">
-            <select id="startTimeNew" onchange="checkAvailabilityNew()"></select>
-        </div>
-    </div>
-    <div class="input-group">
-        <label>END TIME</label>
-        <div class="input-wrapper">
-            <select id="endTimeNew" onchange="checkAvailabilityNew()"></select>
-        </div>
-    </div>
-</div>
+                <div class="input-group">
+                    <label>SELECT TIME SLOT (24H)</label>
+                    <div class="unified-time-box">
+                        <div class="time-part">
+                            <span class="sub-label">FROM</span>
+                            <div class="time-capsule">
+                                <select id="startHour" onchange="checkAvailabilityNew()"></select>
+                                <span class="colon">:</span>
+                                <select id="startMin" onchange="checkAvailabilityNew()"></select>
+                            </div>
+                        </div>
+
+                        <div class="time-arrow">
+                            <i data-lucide="arrow-right"></i>
+                        </div>
+
+                        <div class="time-part">
+                            <span class="sub-label">TO</span>
+                            <div class="time-capsule">
+                                <select id="endHour" onchange="checkAvailabilityNew()"></select>
+                                <span class="colon">:</span>
+                                <select id="endMin" onchange="checkAvailabilityNew()"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="multiInputNew" class="hidden">

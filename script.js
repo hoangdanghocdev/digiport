@@ -229,9 +229,17 @@ function adminAddBusySlot() {
   if (mode === "time") {
     // Logic chặn giờ
     const d = document.getElementById("adminBlockDate").value;
-    const s = document.getElementById("adminBlockStart").value;
-    const e = document.getElementById("adminBlockEnd").value;
-    if (!d || !s || !e) return alert("Please fill Date, Start and End time.");
+    const startHour = document.getElementById("adminStartHour").value;
+    const startMin = document.getElementById("adminStartMin").value;
+    const endHour = document.getElementById("adminEndHour").value;
+    const endMin = document.getElementById("adminEndMin").value;
+
+    if (!d || !startHour || !startMin || !endHour || !endMin)
+      return alert("Please fill Date, Start and End time.");
+
+    const s = `${startHour}:${startMin}`;
+    const e = `${endHour}:${endMin}`;
+
     slot.date = d;
     slot.start = s;
     slot.end = e;
@@ -298,9 +306,7 @@ function renderBusyList() {
       let info =
         s.mode === "date"
           ? `<span class="tag tag-date">RANGE</span> ${s.startDate} ➝ ${s.endDate}`
-          : `<span class="tag tag-time">TIME</span> ${s.date} (${formatTime24(
-              s.start
-            )}-${formatTime24(s.end)})`;
+          : `<span class="tag tag-time">TIME</span> ${s.date} (${s.start}-${s.end})`;
 
       return `
             <li>
@@ -351,14 +357,6 @@ function renderAdminRequests(folder) {
     container.innerHTML = filtered
       .map((r) => {
         let timeDisplay = r.time;
-        if (
-          timeDisplay &&
-          timeDisplay !== "All Day" &&
-          timeDisplay.includes(" - ")
-        ) {
-          const [start, end] = timeDisplay.split(" - ");
-          timeDisplay = `${formatTime24(start)} - ${formatTime24(end)}`;
-        }
         return `
         <div class="req-compact-item">
             <div class="req-main">
@@ -459,10 +457,15 @@ function checkAvailabilityNew() {
   // A. Lấy dữ liệu Input Khách
   if (cysTypeNew === "inday") {
     const dVal = document.getElementById("checkDateNew").value;
-    const tS = document.getElementById("startTimeNew").value;
-    const tE = document.getElementById("endTimeNew").value;
+    const startHour = document.getElementById("startHour").value;
+    const startMin = document.getElementById("startMin").value;
+    const endHour = document.getElementById("endHour").value;
+    const endMin = document.getElementById("endMin").value;
 
-    if (!dVal || !tS || !tE) return;
+    if (!dVal || !startHour || !startMin || !endHour || !endMin) return;
+
+    const tS = `${startHour}:${startMin}`;
+    const tE = `${endHour}:${endMin}`;
 
     reqStart = new Date(`${dVal}T${tS}`);
     reqEnd = new Date(`${dVal}T${tE}`);
@@ -596,6 +599,16 @@ function checkAvailabilityNew() {
 // }
 function submitBookingNew(e) {
   e.preventDefault();
+
+  const timeValue =
+    cysTypeNew === "inday"
+      ? `${document.getElementById("startHour").value}:${
+          document.getElementById("startMin").value
+        } - ${document.getElementById("endHour").value}:${
+          document.getElementById("endMin").value
+        }`
+      : "All Day";
+
   const req = {
     id: Date.now(),
     name: document.getElementById("bookNameNew").value,
@@ -609,12 +622,7 @@ function submitBookingNew(e) {
         : `${document.getElementById("startDateNew").value} to ${
             document.getElementById("endDateNew").value
           }`,
-    time:
-      cysTypeNew === "inday"
-        ? `${document.getElementById("startTimeNew").value} - ${
-            document.getElementById("endTimeNew").value
-          }`
-        : "All Day",
+    time: timeValue,
     status: "Pending",
   };
 
@@ -632,68 +640,90 @@ function submitBookingNew(e) {
 /* =========================================
    6. HELPER FUNCTIONS
    ========================================= */
-function formatTime24(timeStr) {
-  console.log("Formatting time:", timeStr);
-  if (!timeStr || !timeStr.includes(':')) return timeStr;
 
-  let time = timeStr.toUpperCase();
-  let hours = 0;
-  let minutes = 0;
-
-  if (time.includes('AM') || time.includes('SA')) {
-    time = time.replace('AM', '').replace('SA', '').trim();
-    [hours, minutes] = time.split(':').map(s => parseInt(s, 10));
-    if (hours === 12) { // 12 AM is 00:00
-      hours = 0;
-    }
-  } else if (time.includes('PM') || time.includes('CH')) {
-    time = time.replace('PM', '').replace('CH', '').trim();
-    [hours, minutes] = time.split(':').map(s => parseInt(s, 10));
-    if (hours !== 12) {
-      hours += 12;
-    }
-  } else {
-    [hours, minutes] = time.split(':').map(s => parseInt(s, 10));
-  }
-
-  const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  console.log("Formatted time:", formatted);
-  return formatted;
-}
 
 function setupRealTimeDatesNew() {
-    // 1. Lấy giờ Việt Nam
-    const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}));
-    
-    // 2. Setup Ngày (Giữ nguyên)
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    const today = `${y}-${m}-${d}`;
-    
-    ['checkDateNew','startDateNew','endDateNew','adminBlockDate','adminBlockFrom','adminBlockTo'].forEach(id=>{
-        const el = document.getElementById(id); if(el) { el.value=today; el.min=today; }
-    });
+  const now = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+  );
+  const y = now.getFullYear(),
+    m = String(now.getMonth() + 1).padStart(2, "0"),
+    d = String(now.getDate()).padStart(2, "0");
+  const today = `${y}-${m}-${d}`;
 
-    // 3. Setup Giờ (Lấy giờ phút thực tế)
-    const h = String(now.getHours()).padStart(2,'0');
-    const min = String(now.getMinutes()).padStart(2,'0');
-    
-    // Giờ kết thúc tự động +1 tiếng
-    const nextH = String((now.getHours() + 1) % 24).padStart(2,'0');
+  // Setup Date Inputs
+  [
+    "checkDateNew",
+    "startDateNew",
+    "endDateNew",
+    "adminBlockDate",
+    "adminBlockFrom",
+    "adminBlockTo",
+  ].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = today;
+      el.min = today;
+    }
+  });
 
-    // Hàm điền giá trị an toàn
-    const setVal = (id, val) => { 
+  // --- QUAN TRỌNG: TẠO SỐ GIỜ (0-23) VÀ PHÚT (0-55) ---
+  initTimeSelectors();
+
+  // Set giá trị mặc định là giờ hiện tại
+  const h = String(now.getHours()).padStart(2, "0");
+
+  // Làm tròn phút lên mỗi 5 phút (VD: 14:12 -> 14:15)
+  let minRaw = Math.ceil(now.getMinutes() / 5) * 5;
+  if (minRaw === 60) minRaw = 0;
+  const min = String(minRaw).padStart(2, "0");
+
+  const nh = String((now.getHours() + 1) % 24).padStart(2, "0");
+
+  // Hàm điền giá trị
+  const setT = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+
+  // Guest
+  setT("startHour", h);
+  setT("startMin", min);
+  setT("endHour", nh);
+  setT("endMin", min);
+
+  // Admin
+  setT("adminStartHour", h);
+  setT("adminStartMin", min);
+  setT("adminEndHour", nh);
+  setT("adminEndMin", min);
+}
+
+// 2. Hàm tạo danh sách số (00 -> 23)
+function initTimeSelectors() {
+    const mins = [];
+    for(let i=0; i<60; i+=5) mins.push(String(i).padStart(2,'0')); // Phút: 00, 05, 10...
+
+    const fill = (id, isHour) => {
         const el = document.getElementById(id); 
-        if(el) el.value = val; 
+        if(!el) return;
+        el.innerHTML = "";
+        
+        if(isHour) {
+            // Giờ: 00 -> 23
+            for(let i=0; i<24; i++) {
+                const h = String(i).padStart(2,'0');
+                el.innerHTML += `<option value="${h}">${h}</option>`;
+            }
+        } else {
+            // Phút
+            mins.forEach(m => el.innerHTML += `<option value="${m}">${m}</option>`);
+        }
     };
-    
-    // Gán giá trị HH:mm chuẩn (Ví dụ: 09:45)
-    setVal('startTimeNew', `${h}:${min}`); 
-    setVal('adminBlockStart', `${h}:${min}`);
-    
-    setVal('endTimeNew', `${nextH}:${min}`); 
-    setVal('adminBlockEnd', `${nextH}:${min}`);
+
+    // Điền dữ liệu
+    ['startHour', 'endHour', 'adminStartHour', 'adminEndHour'].forEach(id => fill(id, true));
+    ['startMin', 'endMin', 'adminStartMin', 'adminEndMin'].forEach(id => fill(id, false));
 }
 
 function setCysTypeNew(t) {
@@ -784,19 +814,19 @@ function filterGems(t) {
 function loadPosts() {} // Placeholder
 function createPost() {} // Placeholder
 function updateRealTimeClock() {
-    const clockElement = document.getElementById('realTimeClock');
-    if (clockElement) {
-        const now = new Date();
-        const options = {
-            timeZone: 'Asia/Ho_Chi_Minh',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        };
-        const timeString = now.toLocaleTimeString('en-US', options);
-        clockElement.innerHTML = `<strong>Current time in Vietnam:</strong> ${timeString}`;
-    }
+  const clockElement = document.getElementById("realTimeClock");
+  if (clockElement) {
+    const now = new Date();
+    const options = {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    };
+    const timeString = now.toLocaleTimeString("en-US", options);
+    clockElement.innerHTML = `<strong>Current time in Vietnam:</strong> ${timeString}`;
+  }
 }
 
 function savePortfolioContent() {

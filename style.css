@@ -1273,28 +1273,199 @@ footer {
   text-transform: uppercase;
 }
 
-/* --- CẬP NHẬT TRONG style.css --- */
+/* --- TIME RANGE STYLES (ADMIN & GUEST) --- */
 
-/* Style chung cho Input Time (Cả Guest và Admin) */
-input[type="time"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db; /* Viền xám nhẹ */
-    border-radius: 6px;
-    font-size: 0.95rem;
-    outline: none;
-    background-color: #fff;
-    font-family: inherit; /* Giữ font chữ hệ thống */
+/* Khung bao quanh 2 ô input */
+.time-range-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
-/* Riêng cho Admin input nhỏ */
-.input-sm[type="time"] {
-    padding: 6px 10px;
-    font-size: 0.85rem;
+/* Ô input giờ */
+.range-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: center;
+    outline: none;
+    font-family: inherit; /* Giữ font số đẹp */
+}
+
+/* Mũi tên ở giữa */
+.range-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94A3B8;
+    padding: 0 10px;
+}
+.range-arrow i { width: 18px; height: 18px; }
+
+/* Style riêng cho Guest (Có thêm chữ From/To nhỏ) */
+.time-range-box.guest-style {
+    padding: 10px;
+    border: 1px solid #E2E8F0;
     background: #F8FAFC;
 }
 
-input[type="time"]:focus {
+.time-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.time-field span {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748B;
+    margin-bottom: 2px;
+    padding-left: 5px;
+}
+
+.time-field input {
+    width: 100%;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary);
+    outline: none;
+    transition: 0.2s;
+}
+
+.time-field input:focus {
     border-color: var(--accent);
-    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* --- PREMIUM TIME BOX DESIGN --- */
+
+/* 1. Hộp lớn bao ngoài */
+.unified-time-box {
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px; /* Bo góc lớn hơn */
+    padding: 15px 10px;  /* Tăng khoảng cách cho thoáng */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Bóng đổ mềm */
+    transition: all 0.2s ease;
+}
+
+/* Hiệu ứng khi hover vào hộp lớn */
+.unified-time-box:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+/* 2. Từng phần (Cột trái/phải) */
+.time-part {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Căn giữa */
+}
+
+.sub-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #94A3B8;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* 3. Viên thuốc chứa số (Time Capsule) */
+.time-capsule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F8FAFC; /* Nền xám rất nhạt */
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+/* Hiệu ứng khi focus/click vào số */
+.time-capsule:focus-within {
+    background: #EFF6FF; /* Nền xanh nhạt */
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* 4. Style thẻ Select (Số) */
+.time-capsule select {
+    border: none;
+    background: transparent;
+    font-size: 1.25rem; /* Số to, rõ ràng */
+    font-weight: 700;
+    color: var(--text-dark);
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
+    width: 32px;
+    font-family: 'Segoe UI', monospace; /* Dùng font monospace để số thẳng hàng */
+}
+
+/* Khi hover vào số */
+.time-capsule select:hover {
+    color: var(--accent);
+}
+
+/* Dấu hai chấm */
+.colon {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #CBD5E1; /* Màu nhạt để không rối mắt */
+    margin: 0 4px;
+    padding-bottom: 4px;
+}
+.time-capsule:focus-within .colon {
+    color: var(--accent); /* Đổi màu khi active */
+}
+
+/* 5. Mũi tên ở giữa */
+.time-arrow {
+    padding: 0 15px;
+    color: #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 15px; /* Căn chỉnh xuống một chút để ngang hàng với capsule */
+}
+.time-arrow i { width: 24px; height: 24px; }
+
+/* --- STYLE RIÊNG CHO ADMIN (Gọn hơn một chút) --- */
+.unified-time-box.admin-style {
+    padding: 8px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+}
+.unified-time-box.admin-style .time-capsule {
+    background: #F1F5F9;
+    padding: 4px 8px;
+}
+.unified-time-box.admin-style select {
+    font-size: 1rem;
+    width: 28px;
+}
+.unified-time-box.admin-style .time-arrow {
+    padding-top: 0; /* Admin không có label nên không cần padding-top */
 }
