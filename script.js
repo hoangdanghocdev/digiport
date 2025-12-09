@@ -117,6 +117,10 @@ window.addEventListener("load", () => {
   // Setup ngày giờ
   setupRealTimeDatesNew();
 
+  // Real-time clock
+  updateRealTimeClock();
+  setInterval(updateRealTimeClock, 1000);
+
   // QUAN TRỌNG: Check login để quyết định hiện Admin Panel hay không
   checkLoginState();
 
@@ -140,7 +144,7 @@ function checkLoginState() {
     dashboard.className = isAuth ? "dashboard-container" : "hidden";
 
   const authBtn = document.getElementById("authBtn");
-  if (authBtn) authBtn.textContent = isAuth ? "Admin" : "Sign In";
+  if (authBtn) authBtn.textContent = isAuth ? "Sign Out" : "Sign In";
 
   // B. XỬ LÝ ADMIN PANEL Ở TRANG CYS (QUAN TRỌNG NHẤT)
   const cysPanel = document.getElementById("cysAdminPanel");
@@ -181,7 +185,7 @@ function attemptLogin() {
 function handleAuthClick() {
   const isAuth = localStorage.getItem("isAdmin") === "true";
   if (isAuth) {
-    if (confirm("Logout?")) {
+    if (confirm("Sign out?")) {
       localStorage.removeItem("isAdmin");
       location.reload();
     }
@@ -294,7 +298,9 @@ function renderBusyList() {
       let info =
         s.mode === "date"
           ? `<span class="tag tag-date">RANGE</span> ${s.startDate} ➝ ${s.endDate}`
-          : `<span class="tag tag-time">TIME</span> ${s.date} (${formatTime24(s.start)}-${formatTime24(s.end)})`;
+          : `<span class="tag tag-time">TIME</span> ${s.date} (${formatTime24(
+              s.start
+            )}-${formatTime24(s.end)})`;
 
       return `
             <li>
@@ -319,46 +325,47 @@ function removeBusy(id) {
 
 function renderAdminRequests(folder) {
   currentFolder = folder;
-  const list = DB.Requests.getAll();
 
-  // Update Tabs UI
-  ["Pending", "Approved", "Denied"].forEach((t) => {
-    document.getElementById(`tab${t}`).className =
-      t === folder ? "tab-sm active" : "tab-sm";
+  // Handle active tab
+  document.querySelectorAll(".mini-tabs .tab-sm").forEach((tab) => {
+    if (tab.id.toLowerCase().includes(folder.toLowerCase())) {
+      tab.classList.add("active");
+    } else {
+      tab.classList.remove("active");
+    }
   });
 
-  // Update Header Stats
-  if (document.getElementById("statPending"))
-    document.getElementById("statPending").innerText = list.filter(
-      (r) => r.status === "Pending"
-    ).length;
-  if (document.getElementById("statApproved"))
-    document.getElementById("statApproved").innerText = list.filter(
-      (r) => r.status === "Approved"
-    ).length;
-
+  const list = DB.Requests.getAll();
   const filtered = list.filter((r) => r.status === folder);
   const container = document.getElementById("adminRequestList");
   if (!container) return;
+
+  console.log("Filtered requests:", filtered); // DEBUG
 
   if (filtered.length === 0) {
     container.innerHTML = `<div style="text-align:center; color:#94A3B8; padding:30px; font-size:0.85rem;">No ${folder} requests found.</div>`;
     return;
   }
 
-  container.innerHTML = filtered
-    .map(
-      (r) => `
+  try {
+    container.innerHTML = filtered
+      .map((r) => {
+        let timeDisplay = r.time;
+        if (
+          timeDisplay &&
+          timeDisplay !== "All Day" &&
+          timeDisplay.includes(" - ")
+        ) {
+          const [start, end] = timeDisplay.split(" - ");
+          timeDisplay = `${formatTime24(start)} - ${formatTime24(end)}`;
+        }
+        return `
         <div class="req-compact-item">
             <div class="req-main">
                 <div class="req-name-row">${r.name}</div>
                 <div class="req-meta-row">
                     <span class="badge-time">${r.date}</span>
-                    let timeDisplay = r.time;
-                    if (timeDisplay !== "All Day" && timeDisplay.includes(' - ')) {
-                      const [start, end] = timeDisplay.split(" - ");
-                      timeDisplay = `${formatTime24(start)} - ${formatTime24(end)}`;
-                    }
+                    
                     <span>${timeDisplay}</span>
                 </div>
                 <span class="req-reason">"${r.reason}" • 📞 ${r.phone}</span>
@@ -382,9 +389,13 @@ function renderAdminRequests(folder) {
                 }
             </div>
         </div>
-    `
-    )
-    .join("");
+    `;
+      })
+      .join("");
+  } catch (error) {
+    console.error("Error rendering requests:", error);
+    container.innerHTML = `<div style="text-align:center; color:red; padding:30px; font-size:0.85rem;">An error occurred while displaying requests.</div>`;
+  }
 
   if (typeof lucide !== "undefined") lucide.createIcons();
 }
@@ -622,43 +633,67 @@ function submitBookingNew(e) {
    6. HELPER FUNCTIONS
    ========================================= */
 function formatTime24(timeStr) {
+  console.log("Formatting time:", timeStr);
   if (!timeStr || !timeStr.includes(':')) return timeStr;
-  const [hour, minute] = timeStr.split(':');
-  return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+
+  let time = timeStr.toUpperCase();
+  let hours = 0;
+  let minutes = 0;
+
+  if (time.includes('AM') || time.includes('SA')) {
+    time = time.replace('AM', '').replace('SA', '').trim();
+    [hours, minutes] = time.split(':').map(s => parseInt(s, 10));
+    if (hours === 12) { // 12 AM is 00:00
+      hours = 0;
+    }
+  } else if (time.includes('PM') || time.includes('CH')) {
+    time = time.replace('PM', '').replace('CH', '').trim();
+    [hours, minutes] = time.split(':').map(s => parseInt(s, 10));
+    if (hours !== 12) {
+      hours += 12;
+    }
+  } else {
+    [hours, minutes] = time.split(':').map(s => parseInt(s, 10));
+  }
+
+  const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  console.log("Formatted time:", formatted);
+  return formatted;
 }
 
 function setupRealTimeDatesNew() {
-  const d = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
-  );
-  const today = d.toISOString().split("T")[0];
+    // 1. Lấy giờ Việt Nam
+    const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}));
+    
+    // 2. Setup Ngày (Giữ nguyên)
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const today = `${y}-${m}-${d}`;
+    
+    ['checkDateNew','startDateNew','endDateNew','adminBlockDate','adminBlockFrom','adminBlockTo'].forEach(id=>{
+        const el = document.getElementById(id); if(el) { el.value=today; el.min=today; }
+    });
 
-  [
-    "checkDateNew",
-    "startDateNew",
-    "endDateNew",
-    "adminBlockDate",
-    "adminBlockFrom",
-    "adminBlockTo",
-  ].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.value = today;
-      el.min = today;
-    }
-  });
+    // 3. Setup Giờ (Lấy giờ phút thực tế)
+    const h = String(now.getHours()).padStart(2,'0');
+    const min = String(now.getMinutes()).padStart(2,'0');
+    
+    // Giờ kết thúc tự động +1 tiếng
+    const nextH = String((now.getHours() + 1) % 24).padStart(2,'0');
 
-  const h = String(d.getHours()).padStart(2, "0");
-  const nh = String((d.getHours() + 1) % 24).padStart(2, "0");
-
-  const setVal = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.value = val;
-  };
-  setVal("startTimeNew", `${h}:00`);
-  setVal("adminBlockStart", `${h}:00`);
-  setVal("endTimeNew", `${nh}:00`);
-  setVal("adminBlockEnd", `${nh}:00`);
+    // Hàm điền giá trị an toàn
+    const setVal = (id, val) => { 
+        const el = document.getElementById(id); 
+        if(el) el.value = val; 
+    };
+    
+    // Gán giá trị HH:mm chuẩn (Ví dụ: 09:45)
+    setVal('startTimeNew', `${h}:${min}`); 
+    setVal('adminBlockStart', `${h}:${min}`);
+    
+    setVal('endTimeNew', `${nextH}:${min}`); 
+    setVal('adminBlockEnd', `${nextH}:${min}`);
 }
 
 function setCysTypeNew(t) {
@@ -715,7 +750,7 @@ function renderGems(filter = "all") {
   const isAuth = localStorage.getItem("isAdmin") === "true";
   list.forEach((g) => {
     if (filter === "all" || g.type === filter) {
-      grid.innerHTML += `<div class="gem-card"><div style="height:120px;background:#eee;margin-bottom:10px;display:flex;align-items:center;justify-content:center;">IMG</div><h4>${
+      grid.innerHTML += `<div class="gem-card"><div style="height:120px;background:#eee;margin-bottom:10px;display:flex;align-items:center;justify-content:center;"><i data-lucide="gem" style="width:48px; height:48px; color:#666;"></i></div><h4>${
         g.name
       }</h4><p>${g.desc}</p>${
         isAuth
@@ -726,11 +761,11 @@ function renderGems(filter = "all") {
   });
 }
 function addGem() {
-  const n = document.getElementById("gemName").value;
+  const n = document.getElementById("gemTitle").value;
   if (!n) return;
   DB.Gems.add({
     name: n,
-    type: document.getElementById("gemType").value,
+    type: document.getElementById("gemCategory").value,
     desc: document.getElementById("gemDesc").value,
   });
   renderGems();
@@ -748,6 +783,22 @@ function filterGems(t) {
 }
 function loadPosts() {} // Placeholder
 function createPost() {} // Placeholder
+function updateRealTimeClock() {
+    const clockElement = document.getElementById('realTimeClock');
+    if (clockElement) {
+        const now = new Date();
+        const options = {
+            timeZone: 'Asia/Ho_Chi_Minh',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        const timeString = now.toLocaleTimeString('en-US', options);
+        clockElement.innerHTML = `<strong>Current time in Vietnam:</strong> ${timeString}`;
+    }
+}
+
 function savePortfolioContent() {
   const d = {};
   document

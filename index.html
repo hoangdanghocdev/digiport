@@ -630,8 +630,14 @@
                         </div>
                         <div id="timeInputGroup">
                             <div class="row-sm">
-                                <div><label>Start</label><input type="time" id="adminBlockStart" class="input-sm"></div>
-                                <div><label>End</label><input type="time" id="adminBlockEnd" class="input-sm"></div>
+                                <div>
+                                    <label>Start</label>
+                                    <select id="adminBlockStart" class="input-sm"></select>
+                                </div>
+                                <div>
+                                    <label>End</label>
+                                    <select id="adminBlockEnd" class="input-sm"></select>
+                                </div>
                             </div>
                         </div>
                         <div style="margin-top:8px">
@@ -670,6 +676,7 @@
 
     <div id="guestView" class="cys-container">
         
+        <div id="realTimeClock" style="text-align: center; font-size: 1.2rem; margin-bottom: 20px;"></div>
         <h2 style="text-align:center; color:var(--primary); margin-bottom:20px;">CHECK AVAILABILITY</h2>
 
         <div class="cys-tabs">
@@ -691,19 +698,19 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-group">
-                        <label>START TIME</label>
-                        <div class="input-wrapper">
-                            <input type="time" id="startTimeNew" value="09:00" onchange="checkAvailabilityNew()">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>END TIME</label>
-                        <div class="input-wrapper">
-                            <input type="time" id="endTimeNew" value="10:00" onchange="checkAvailabilityNew()">
-                        </div>
-                    </div>
-                </div>
+    <div class="input-group">
+        <label>START TIME</label>
+        <div class="input-wrapper">
+            <select id="startTimeNew" onchange="checkAvailabilityNew()"></select>
+        </div>
+    </div>
+    <div class="input-group">
+        <label>END TIME</label>
+        <div class="input-wrapper">
+            <select id="endTimeNew" onchange="checkAvailabilityNew()"></select>
+        </div>
+    </div>
+</div>
             </div>
 
             <div id="multiInputNew" class="hidden">
@@ -898,7 +905,7 @@
                   style="margin: 20px 0; border: 0; border-top: 1px solid #eee"
                 />
                 <h4 style="margin-bottom: 10px">Blocked Slots:</h4>
-                <ul id="busyList" class="simple-list"></ul>
+                <ul id="busyList-old" class="simple-list"></ul>
               </div>
 
               <div class="dash-card">

@@ -1272,3 +1272,29 @@ footer {
   font-weight: 700;
   text-transform: uppercase;
 }
+
+/* --- CẬP NHẬT TRONG style.css --- */
+
+/* Style chung cho Input Time (Cả Guest và Admin) */
+input[type="time"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db; /* Viền xám nhẹ */
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    background-color: #fff;
+    font-family: inherit; /* Giữ font chữ hệ thống */
+}
+
+/* Riêng cho Admin input nhỏ */
+.input-sm[type="time"] {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    background: #F8FAFC;
+}
+
+input[type="time"]:focus {
+    border-color: var(--accent);
+    background-color: #fff;
+}
