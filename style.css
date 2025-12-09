@@ -1469,3 +1469,256 @@ footer {
 .unified-time-box.admin-style .time-arrow {
     padding-top: 0; /* Admin không có label nên không cần padding-top */
 }
+
+/* --- TIME INPUT STYLE (TYPING MODE) --- */
+
+.time-input {
+    border: none;
+    background: transparent;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    width: 32px; /* Độ rộng vừa đủ 2 số */
+    outline: none;
+    font-family: 'Segoe UI', monospace;
+}
+
+/* Placeholder màu nhạt hơn */
+.time-input::placeholder {
+    color: #CBD5E1;
+}
+
+/* Ẩn input cũ đi nếu lỡ còn */
+.time-capsule select { display: none !important; }
+
+/* Style riêng cho Admin */
+.unified-time-box.admin-style .time-input {
+    font-size: 1rem;
+    width: 28px;
+}
+
+/* --- HYBRID TIME PICKER (TYPE + SCROLL) --- */
+
+/* Wrapper để định vị dropdown */
+.time-input-wrapper {
+    position: relative;
+    width: 35px; /* Chiều rộng cố định cho đẹp */
+}
+
+/* Ô Input (Để gõ) */
+.time-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-align: center;
+    outline: none;
+    padding: 0;
+    font-family: 'Segoe UI', monospace;
+    cursor: text;
+}
+
+/* Style riêng Admin Input cho nhỏ lại */
+.unified-time-box.admin-style .time-input {
+    font-size: 1rem;
+}
+
+/* DROPDOWN DANH SÁCH (Ẩn mặc định) */
+.custom-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; /* Rộng hơn input một chút để dễ nhìn */
+    max-height: 180px; /* Chiều cao tối đa trước khi cuộn */
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+    z-index: 100;
+    overflow-y: auto; /* Cho phép cuộn */
+    display: none; /* Ẩn */
+    margin-top: 5px;
+}
+
+/* Hiện khi input được focus */
+.time-input-wrapper:focus-within .custom-dropdown {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+/* Từng dòng option */
+.dropdown-item {
+    padding: 8px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: 0.1s;
+}
+.dropdown-item:hover {
+    background: #EFF6FF;
+    color: var(--accent);
+}
+
+/* --- DESIGN THANH CUỘN (SCROLLBAR) --- */
+.custom-dropdown::-webkit-scrollbar {
+    width: 4px; /* Siêu mỏng */
+}
+.custom-dropdown::-webkit-scrollbar-track {
+    background: transparent; 
+}
+.custom-dropdown::-webkit-scrollbar-thumb {
+    background: #CBD5E1; /* Màu xám nhạt */
+    border-radius: 10px;
+}
+.custom-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+/* --- FIX LỖI DANH SÁCH BỊ MẤT/CHE KHUẤT --- */
+
+/* 1. Cho phép danh sách tràn ra ngoài thẻ Card Admin */
+.admin-card {
+    overflow: visible !important; 
+}
+
+/* 2. Cho phép tràn ra ngoài khung chọn giờ */
+.unified-time-box,
+.time-digital-group,
+.card-body {
+    overflow: visible !important;
+}
+
+/* 3. Đảm bảo danh sách nằm trên cùng (Z-Index cao nhất) */
+.custom-dropdown {
+    z-index: 9999 !important; /* Luôn nổi lên trên */
+    margin-top: 5px; /* Cách ô nhập một chút cho thoáng */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* Bóng đổ đậm hơn để nổi bật */
+    border: 1px solid #d1d5db;
+}
+
+/* 4. Fix độ rộng danh sách để chứa đủ số và thanh cuộn */
+.custom-dropdown {
+    width: 50px; /* Rộng hơn chút */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* --- FULL INFO REQUEST CARD DESIGN --- */
+
+/* Khung thẻ đơn */
+.req-full-card {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    border-left: 4px solid var(--accent); /* Viền xanh mặc định */
+    transition: transform 0.2s;
+}
+.req-full-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Header: Tên + Ngày giờ */
+.req-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #F1F5F9;
+}
+.req-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+.req-time-badge {
+    background: #EFF6FF;
+    color: var(--accent);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Body: Thông tin chi tiết */
+.req-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #4B5563;
+}
+.req-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.req-row i {
+    width: 14px;
+    height: 14px;
+    color: #94A3B8;
+    flex-shrink: 0;
+}
+.req-row strong {
+    color: #1E293B;
+    font-weight: 600;
+}
+.req-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+.req-link:hover { text-decoration: underline; }
+
+/* Actions: Nút bấm */
+.req-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+.btn-action {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+.btn-approve { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+.btn-approve:hover { background: #166534; color: white; }
+
+.btn-reject { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+.btn-reject:hover { background: #991B1B; color: white; }
+
+/* Trạng thái Folder */
+.status-tag {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 10px;
+}
+.tag-approved { background: #DCFCE7; color: #166534; }
+.tag-denied { background: #FEE2E2; color: #991B1B; }

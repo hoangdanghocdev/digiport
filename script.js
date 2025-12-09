@@ -330,72 +330,93 @@ function removeBusy(id) {
 // --- CỘT PHẢI: REQUEST MANAGER ---
 
 function renderAdminRequests(folder) {
-  currentFolder = folder;
+    currentFolder = folder;
+    
+    // 1. Cập nhật Tab Active
+    ['Pending','Approved','Denied'].forEach(t => {
+        const el = document.getElementById(`tab${t}`);
+        if(el) el.className = (t === folder) ? 'tab-pill active' : 'tab-pill';
+    });
 
-  // Handle active tab
-  document.querySelectorAll(".mini-tabs .tab-sm").forEach((tab) => {
-    if (tab.id.toLowerCase().includes(folder.toLowerCase())) {
-      tab.classList.add("active");
-    } else {
-      tab.classList.remove("active");
+    // 2. Lấy dữ liệu
+    const list = JSON.parse(localStorage.getItem('requests')) || [];
+    
+    // Update số lượng trên Header
+    if(document.getElementById('statPending')) 
+        document.getElementById('statPending').innerText = list.filter(r => r.status === 'Pending').length;
+    if(document.getElementById('statApproved')) 
+        document.getElementById('statApproved').innerText = list.filter(r => r.status === 'Approved').length;
+
+    // Lọc danh sách theo folder hiện tại
+    const filtered = list.filter(r => r.status === folder);
+    const container = document.getElementById('adminRequestList');
+    if(!container) return;
+
+    // 3. Nếu trống
+    if(filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:#94A3B8; padding:30px; font-size:0.9rem;">
+            <i data-lucide="inbox" style="width:40px; height:40px; margin-bottom:10px; opacity:0.5"></i><br>
+            No ${folder} requests found.
+        </div>`;
+        if(typeof lucide !== 'undefined') lucide.createIcons();
+        return;
     }
-  });
 
-  const list = DB.Requests.getAll();
-  const filtered = list.filter((r) => r.status === folder);
-  const container = document.getElementById("adminRequestList");
-  if (!container) return;
-
-  console.log("Filtered requests:", filtered); // DEBUG
-
-  if (filtered.length === 0) {
-    container.innerHTML = `<div style="text-align:center; color:#94A3B8; padding:30px; font-size:0.85rem;">No ${folder} requests found.</div>`;
-    return;
-  }
-
-  try {
-    container.innerHTML = filtered
-      .map((r) => {
-        let timeDisplay = r.time;
-        return `
-        <div class="req-compact-item">
-            <div class="req-main">
-                <div class="req-name-row">${r.name}</div>
-                <div class="req-meta-row">
-                    <span class="badge-time">${r.date}</span>
-                    
-                    <span>${timeDisplay}</span>
-                </div>
-                <span class="req-reason">"${r.reason}" • 📞 ${r.phone}</span>
-                ${
-                  r.location
-                    ? `<a href="${r.location}" target="_blank" style="font-size:0.75rem; color:var(--accent); text-decoration:none;">📍 Map Link</a>`
-                    : ""
-                }
-            </div>
+    // 4. Render thẻ chi tiết
+    container.innerHTML = filtered.map(r => `
+        <div class="req-full-card">
             
-            <div class="req-actions-col">
-                ${
-                  folder === "Pending"
-                    ? `
-                    <button onclick="processRequest(${r.id}, 'Approved')" class="btn-icon btn-ok" title="Approve"><i data-lucide="check" style="width:16px"></i></button>
-                    <button onclick="processRequest(${r.id}, 'Denied')" class="btn-icon btn-no" title="Deny"><i data-lucide="x" style="width:16px"></i></button>
-                `
-                    : `<span style="font-size:0.7rem; font-weight:bold; color:${
-                        folder === "Approved" ? "green" : "red"
-                      }">${folder}</span>`
-                }
+            <div class="req-header">
+                <div class="req-name">${r.name}</div>
+                <div class="req-time-badge">
+                    <i data-lucide="clock" style="width:12px; height:12px; display:inline; margin-right:3px"></i>
+                    ${r.date} <br> <span style="font-weight:400">${r.time}</span>
+                </div>
             </div>
-        </div>
-    `;
-      })
-      .join("");
-  } catch (error) {
-    console.error("Error rendering requests:", error);
-    container.innerHTML = `<div style="text-align:center; color:red; padding:30px; font-size:0.85rem;">An error occurred while displaying requests.</div>`;
-  }
 
-  if (typeof lucide !== "undefined") lucide.createIcons();
+            <div class="req-body">
+                <div class="req-row">
+                    <i data-lucide="phone"></i> 
+                    <span><strong>Phone:</strong> ${r.phone}</span>
+                </div>
+                
+                <div class="req-row">
+                    <i data-lucide="message-circle"></i> 
+                    <span><strong>Contact via:</strong> ${r.platform || 'N/A'}</span>
+                </div>
+
+                <div class="req-row">
+                    <i data-lucide="help-circle"></i> 
+                    <span><strong>Reason:</strong> ${r.reason}</span>
+                </div>
+
+                ${r.location ? `
+                <div class="req-row">
+                    <i data-lucide="map-pin"></i> 
+                    <span><strong>Location:</strong> <a href="${r.location}" target="_blank" class="req-link">View Map</a></span>
+                </div>` : ''}
+            </div>
+
+            ${folder === 'Pending' ? `
+            <div class="req-actions">
+                <button onclick="processRequest(${r.id}, 'Approved')" class="btn-action btn-approve">
+                    <i data-lucide="check"></i> Approve
+                </button>
+                <button onclick="processRequest(${r.id}, 'Denied')" class="btn-action btn-reject">
+                    <i data-lucide="x"></i> Reject
+                </button>
+            </div>
+            ` : `
+            <div class="status-tag ${folder === 'Approved' ? 'tag-approved' : 'tag-denied'}">
+                ${folder === 'Approved' ? '✅ Request Approved' : '🚫 Request Denied'}
+            </div>
+            `}
+
+        </div>
+    `).join('');
+    
+    // Render lại icon sau khi chèn HTML
+    if(typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // function processRequest(id, newStatus) {
@@ -643,87 +664,93 @@ function submitBookingNew(e) {
 
 
 function setupRealTimeDatesNew() {
-  const now = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
-  );
-  const y = now.getFullYear(),
-    m = String(now.getMonth() + 1).padStart(2, "0"),
-    d = String(now.getDate()).padStart(2, "0");
-  const today = `${y}-${m}-${d}`;
+    const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}));
+    const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
+    const today = `${y}-${m}-${d}`;
+    
+    // Setup Date
+    ['checkDateNew','startDateNew','endDateNew','adminBlockDate','adminBlockFrom','adminBlockTo'].forEach(id=>{
+        const el = document.getElementById(id); if(el) { el.value=today; el.min=today; }
+    });
 
-  // Setup Date Inputs
-  [
-    "checkDateNew",
-    "startDateNew",
-    "endDateNew",
-    "adminBlockDate",
-    "adminBlockFrom",
-    "adminBlockTo",
-  ].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.value = today;
-      el.min = today;
-    }
-  });
+    // --- SETUP HYBRID INPUT (GÕ + CUỘN) ---
+    // Cấu hình: (InputID, DropdownID, MaxValue, NextInputID)
+    setupHybridInput('startHour', 'list-startHour', 23, 'startMin');
+    setupHybridInput('startMin', 'list-startMin', 59, 'endHour');
+    setupHybridInput('endHour', 'list-endHour', 23, 'endMin');
+    setupHybridInput('endMin', 'list-endMin', 59, null);
 
-  // --- QUAN TRỌNG: TẠO SỐ GIỜ (0-23) VÀ PHÚT (0-55) ---
-  initTimeSelectors();
+    setupHybridInput('adminStartHour', 'list-adminStartHour', 23, 'adminStartMin');
+    setupHybridInput('adminStartMin', 'list-adminStartMin', 59, 'adminEndHour');
+    setupHybridInput('adminEndHour', 'list-adminEndHour', 23, 'adminEndMin');
+    setupHybridInput('adminEndMin', 'list-adminEndMin', 59, null);
 
-  // Set giá trị mặc định là giờ hiện tại
-  const h = String(now.getHours()).padStart(2, "0");
+    // Set giá trị mặc định
+    const h = String(now.getHours()).padStart(2,'0');
+    const min = String(Math.ceil(now.getMinutes()/5)*5).padStart(2,'0'); // Làm tròn 5p
+    const nh = String((now.getHours()+1)%24).padStart(2,'0');
 
-  // Làm tròn phút lên mỗi 5 phút (VD: 14:12 -> 14:15)
-  let minRaw = Math.ceil(now.getMinutes() / 5) * 5;
-  if (minRaw === 60) minRaw = 0;
-  const min = String(minRaw).padStart(2, "0");
-
-  const nh = String((now.getHours() + 1) % 24).padStart(2, "0");
-
-  // Hàm điền giá trị
-  const setT = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.value = val;
-  };
-
-  // Guest
-  setT("startHour", h);
-  setT("startMin", min);
-  setT("endHour", nh);
-  setT("endMin", min);
-
-  // Admin
-  setT("adminStartHour", h);
-  setT("adminStartMin", min);
-  setT("adminEndHour", nh);
-  setT("adminEndMin", min);
+    const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+    
+    setVal('startHour', h); setVal('startMin', min);
+    setVal('endHour', nh); setVal('endMin', min);
+    
+    setVal('adminStartHour', h); setVal('adminStartMin', min);
+    setVal('adminEndHour', nh); setVal('adminEndMin', min);
 }
 
-// 2. Hàm tạo danh sách số (00 -> 23)
-function initTimeSelectors() {
-    const mins = [];
-    for(let i=0; i<60; i+=5) mins.push(String(i).padStart(2,'0')); // Phút: 00, 05, 10...
+// HÀM XỬ LÝ LOGIC HYBRID (QUAN TRỌNG)
+function setupHybridInput(inputId, listId, maxVal, nextId) {
+    const input = document.getElementById(inputId);
+    const list = document.getElementById(listId);
+    if(!input || !list) return;
 
-    const fill = (id, isHour) => {
-        const el = document.getElementById(id); 
-        if(!el) return;
-        el.innerHTML = "";
+    // 1. Tạo danh sách cuộn
+    list.innerHTML = "";
+    for(let i=0; i<=maxVal; i++) {
+        const val = String(i).padStart(2, '0');
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        item.innerText = val;
         
-        if(isHour) {
-            // Giờ: 00 -> 23
-            for(let i=0; i<24; i++) {
-                const h = String(i).padStart(2,'0');
-                el.innerHTML += `<option value="${h}">${h}</option>`;
-            }
-        } else {
-            // Phút
-            mins.forEach(m => el.innerHTML += `<option value="${m}">${m}</option>`);
-        }
-    };
+        // Sự kiện: Click vào số trong list
+        item.onmousedown = function(e) {
+            e.preventDefault(); // Ngăn input bị mất focus ngay lập tức
+            input.value = val;
+            if(nextId) document.getElementById(nextId).focus(); // Nhảy ô tiếp theo
+            if(typeof checkAvailabilityNew === 'function') checkAvailabilityNew();
+        };
+        list.appendChild(item);
+    }
 
-    // Điền dữ liệu
-    ['startHour', 'endHour', 'adminStartHour', 'adminEndHour'].forEach(id => fill(id, true));
-    ['startMin', 'endMin', 'adminStartMin', 'adminEndMin'].forEach(id => fill(id, false));
+    // 2. Sự kiện: Gõ phím
+    input.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ số
+        if(parseInt(this.value) > maxVal) this.value = maxVal; // Chặn lố
+        
+        // Tự động nhảy nếu gõ đủ 2 số
+        if(this.value.length === 2 && nextId) {
+            document.getElementById(nextId).focus();
+        }
+        if(typeof checkAvailabilityNew === 'function') checkAvailabilityNew();
+    });
+
+    // 3. Sự kiện: Blur (Rời chuột) -> Tự thêm số 0
+    input.addEventListener('blur', function() {
+        if(this.value.length === 1) this.value = '0' + this.value;
+        if(this.value === '') this.value = '00';
+    });
+
+    // 4. Sự kiện: Focus -> Chọn tất cả để gõ đè
+    input.addEventListener('focus', function() {
+        this.select();
+        // Tự động cuộn danh sách đến số hiện tại
+        const currentVal = parseInt(this.value) || 0;
+        const targetItem = list.children[currentVal];
+        if(targetItem) {
+            list.scrollTop = targetItem.offsetTop - list.offsetTop - 30;
+        }
+    });
 }
 
 function setCysTypeNew(t) {

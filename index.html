@@ -630,21 +630,33 @@
                             </div>
                         </div>
                         <div id="timeInputGroup">
-    <label style="font-size:0.75rem; font-weight:700; color:#64748B; margin-bottom:5px; display:block;">BUSY SLOT</label>
+    <label style="font-size:0.75rem;font-weight:700;color:#64748B;margin-bottom:5px;display:block;">BUSY SLOT</label>
     <div class="unified-time-box admin-style">
         <div class="time-part">
             <div class="time-capsule">
-                <select id="adminStartHour"></select>
+                <div class="time-input-wrapper">
+                    <input type="text" id="adminStartHour" class="time-input" maxlength="2" autocomplete="off">
+                    <div class="custom-dropdown" id="list-adminStartHour"></div>
+                </div>
                 <span class="colon">:</span>
-                <select id="adminStartMin"></select>
+                <div class="time-input-wrapper">
+                    <input type="text" id="adminStartMin" class="time-input" maxlength="2" autocomplete="off">
+                    <div class="custom-dropdown" id="list-adminStartMin"></div>
+                </div>
             </div>
         </div>
         <div class="time-arrow"><i data-lucide="minus"></i></div>
         <div class="time-part">
             <div class="time-capsule">
-                <select id="adminEndHour"></select>
+                <div class="time-input-wrapper">
+                    <input type="text" id="adminEndHour" class="time-input" maxlength="2" autocomplete="off">
+                    <div class="custom-dropdown" id="list-adminEndHour"></div>
+                </div>
                 <span class="colon">:</span>
-                <select id="adminEndMin"></select>
+                <div class="time-input-wrapper">
+                    <input type="text" id="adminEndMin" class="time-input" maxlength="2" autocomplete="off">
+                    <div class="custom-dropdown" id="list-adminEndMin"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -706,27 +718,39 @@
                     </div>
                 </div>
                 <div class="input-group">
-                    <label>SELECT TIME SLOT (24H)</label>
+                    <label>SELECT TIME SLOT</label>
                     <div class="unified-time-box">
                         <div class="time-part">
                             <span class="sub-label">FROM</span>
                             <div class="time-capsule">
-                                <select id="startHour" onchange="checkAvailabilityNew()"></select>
+                                <div class="time-input-wrapper">
+                                    <input type="text" id="startHour" class="time-input" placeholder="HH" maxlength="2" autocomplete="off">
+                                    <div class="custom-dropdown" id="list-startHour"></div>
+                                </div>
+                                
                                 <span class="colon">:</span>
-                                <select id="startMin" onchange="checkAvailabilityNew()"></select>
+                                
+                                <div class="time-input-wrapper">
+                                    <input type="text" id="startMin" class="time-input" placeholder="MM" maxlength="2" autocomplete="off">
+                                    <div class="custom-dropdown" id="list-startMin"></div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="time-arrow">
-                            <i data-lucide="arrow-right"></i>
-                        </div>
+                        <div class="time-arrow"><i data-lucide="arrow-right"></i></div>
 
                         <div class="time-part">
                             <span class="sub-label">TO</span>
                             <div class="time-capsule">
-                                <select id="endHour" onchange="checkAvailabilityNew()"></select>
+                                <div class="time-input-wrapper">
+                                    <input type="text" id="endHour" class="time-input" placeholder="HH" maxlength="2" autocomplete="off">
+                                    <div class="custom-dropdown" id="list-endHour"></div>
+                                </div>
                                 <span class="colon">:</span>
-                                <select id="endMin" onchange="checkAvailabilityNew()"></select>
+                                <div class="time-input-wrapper">
+                                    <input type="text" id="endMin" class="time-input" placeholder="MM" maxlength="2" autocomplete="off">
+                                    <div class="custom-dropdown" id="list-endMin"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
