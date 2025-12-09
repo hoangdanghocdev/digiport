@@ -332,16 +332,17 @@ function removeBusy(id) {
 function renderAdminRequests(folder) {
     currentFolder = folder;
     
-    // 1. Cập nhật Tab Active
+// Update Tabs UI (Dùng class mới 'seg-btn')
     ['Pending','Approved','Denied'].forEach(t => {
         const el = document.getElementById(`tab${t}`);
-        if(el) el.className = (t === folder) ? 'tab-pill active' : 'tab-pill';
+        // Nếu là tab đang chọn -> thêm active, ngược lại chỉ để seg-btn
+        if(el) el.className = (t === folder) ? 'seg-btn active' : 'seg-btn';
     });
 
-    // 2. Lấy dữ liệu
+    // Lấy dữ liệu
     const list = JSON.parse(localStorage.getItem('requests')) || [];
     
-    // Update số lượng trên Header
+    // Update Stats (Số lượng)
     if(document.getElementById('statPending')) 
         document.getElementById('statPending').innerText = list.filter(r => r.status === 'Pending').length;
     if(document.getElementById('statApproved')) 
@@ -350,72 +351,38 @@ function renderAdminRequests(folder) {
     // Lọc danh sách theo folder hiện tại
     const filtered = list.filter(r => r.status === folder);
     const container = document.getElementById('adminRequestList');
+    
     if(!container) return;
 
-    // 3. Nếu trống
     if(filtered.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:#94A3B8; padding:30px; font-size:0.9rem;">
-            <i data-lucide="inbox" style="width:40px; height:40px; margin-bottom:10px; opacity:0.5"></i><br>
-            No ${folder} requests found.
-        </div>`;
-        if(typeof lucide !== 'undefined') lucide.createIcons();
+        container.innerHTML = `<div style="text-align:center; color:#94A3B8; padding:30px; font-size:0.85rem;">No ${folder} requests found.</div>`;
         return;
     }
 
-    // 4. Render thẻ chi tiết
+    // Render HTML
     container.innerHTML = filtered.map(r => `
         <div class="req-full-card">
-            
             <div class="req-header">
                 <div class="req-name">${r.name}</div>
                 <div class="req-time-badge">
-                    <i data-lucide="clock" style="width:12px; height:12px; display:inline; margin-right:3px"></i>
-                    ${r.date} <br> <span style="font-weight:400">${r.time}</span>
+                    ${r.date} <br> <span>${r.time}</span>
                 </div>
             </div>
-
             <div class="req-body">
-                <div class="req-row">
-                    <i data-lucide="phone"></i> 
-                    <span><strong>Phone:</strong> ${r.phone}</span>
-                </div>
-                
-                <div class="req-row">
-                    <i data-lucide="message-circle"></i> 
-                    <span><strong>Contact via:</strong> ${r.platform || 'N/A'}</span>
-                </div>
-
-                <div class="req-row">
-                    <i data-lucide="help-circle"></i> 
-                    <span><strong>Reason:</strong> ${r.reason}</span>
-                </div>
-
-                ${r.location ? `
-                <div class="req-row">
-                    <i data-lucide="map-pin"></i> 
-                    <span><strong>Location:</strong> <a href="${r.location}" target="_blank" class="req-link">View Map</a></span>
-                </div>` : ''}
+                <div class="req-row"><i data-lucide="phone"></i> <strong>${r.phone}</strong></div>
+                <div class="req-row"><i data-lucide="message-circle"></i> <span>${r.platform || '-'}</span></div>
+                <div class="req-row"><i data-lucide="help-circle"></i> <span>${r.reason}</span></div>
+                ${r.location ? `<div class="req-row"><i data-lucide="map-pin"></i> <a href="${r.location}" target="_blank" class="req-link">View Map</a></div>` : ''}
             </div>
-
             ${folder === 'Pending' ? `
             <div class="req-actions">
-                <button onclick="processRequest(${r.id}, 'Approved')" class="btn-action btn-approve">
-                    <i data-lucide="check"></i> Approve
-                </button>
-                <button onclick="processRequest(${r.id}, 'Denied')" class="btn-action btn-reject">
-                    <i data-lucide="x"></i> Reject
-                </button>
+                <button onclick="processRequest(${r.id}, 'Approved')" class="btn-action btn-approve"><i data-lucide="check"></i> Approve</button>
+                <button onclick="processRequest(${r.id}, 'Denied')" class="btn-action btn-reject"><i data-lucide="x"></i> Reject</button>
             </div>
-            ` : `
-            <div class="status-tag ${folder === 'Approved' ? 'tag-approved' : 'tag-denied'}">
-                ${folder === 'Approved' ? '✅ Request Approved' : '🚫 Request Denied'}
-            </div>
-            `}
-
+            ` : `<div class="status-tag ${folder==='Approved'?'tag-approved':'tag-denied'}">${folder}</div>`}
         </div>
     `).join('');
     
-    // Render lại icon sau khi chèn HTML
     if(typeof lucide !== 'undefined') lucide.createIcons();
 }
 
@@ -619,43 +586,66 @@ function checkAvailabilityNew() {
 //     renderAdminRequests("Pending");
 // }
 function submitBookingNew(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const timeValue =
-    cysTypeNew === "inday"
-      ? `${document.getElementById("startHour").value}:${
-          document.getElementById("startMin").value
-        } - ${document.getElementById("endHour").value}:${
-          document.getElementById("endMin").value
-        }`
-      : "All Day";
+    // 1. Xử lý lấy thời gian từ giao diện mới (Giờ : Phút)
+    let timeStr = "All Day";
+    let dateStr = "";
 
-  const req = {
-    id: Date.now(),
-    name: document.getElementById("bookNameNew").value,
-    phone: document.getElementById("bookPhoneNew").value,
-    platform: document.getElementById("contactPlatformNew").value,
-    reason: document.getElementById("reasonSelectNew").value,
-    location: document.getElementById("locationLinkNew").value,
-    date:
-      cysTypeNew === "inday"
-        ? document.getElementById("checkDateNew").value
-        : `${document.getElementById("startDateNew").value} to ${
-            document.getElementById("endDateNew").value
-          }`,
-    time: timeValue,
-    status: "Pending",
-  };
+    if (cysTypeNew === 'inday') {
+        // Lấy ngày
+        dateStr = document.getElementById('checkDateNew').value;
+        
+        // Lấy giờ từ 4 ô input mới
+        const sh = document.getElementById('startHour').value;
+        const sm = document.getElementById('startMin').value;
+        const eh = document.getElementById('endHour').value;
+        const em = document.getElementById('endMin').value;
 
-  DB.Requests.add(req);
+        // Ghép chuỗi: "09:30 - 10:00"
+        timeStr = `${sh}:${sm} - ${eh}:${em}`;
+    } else {
+        // Lấy ngày cho Multi-day
+        const d1 = document.getElementById('startDateNew').value;
+        const d2 = document.getElementById('endDateNew').value;
+        dateStr = `${d1} to ${d2}`;
+        timeStr = "Multi-day Event";
+    }
 
-  alert("✅ Sent! Waiting for Admin approval.");
-  e.target.reset();
-  setCysTypeNew(cysTypeNew);
+    // 2. Tạo đối tượng Request
+    const req = {
+        id: Date.now(),
+        name: document.getElementById('bookNameNew').value,
+        phone: document.getElementById('bookPhoneNew').value,
+        platform: document.getElementById('contactPlatformNew').value, // Lấy platform
+        reason: document.getElementById('reasonSelectNew').value,
+        location: document.getElementById('locationLinkNew').value,
+        date: dateStr,
+        time: timeStr, // Lưu chuỗi giờ đã ghép
+        status: 'Pending' // Mặc định là Chờ duyệt
+    };
 
-  // Nếu đang là Admin thì cập nhật list ngay
-  if (localStorage.getItem("isAdmin") === "true")
-    renderAdminRequests("Pending");
+    // 3. Lưu vào LocalStorage
+    const list = JSON.parse(localStorage.getItem('requests')) || [];
+    list.push(req);
+    localStorage.setItem('requests', JSON.stringify(list));
+
+    // 4. Thông báo & Reset
+    alert("✅ Sent! Waiting for Admin approval.");
+    e.target.reset();
+    
+    // Reset lại giao diện giờ về mặc định
+    setupRealTimeDatesNew(); 
+    
+    // 5. CỰC KỲ QUAN TRỌNG: Nếu đang là Admin thì cập nhật list ngay lập tức
+    if (localStorage.getItem('isAdmin') === 'true') {
+        renderAdminRequests('Pending');
+        
+        // Cập nhật số lượng trên Header (Nếu có)
+        const pendingCount = list.filter(r => r.status === 'Pending').length;
+        const badge = document.getElementById('statPending');
+        if(badge) badge.innerText = pendingCount;
+    }
 }
 
 /* =========================================

@@ -10,21 +10,35 @@
   </head>
   <body>
     <header>
-      <div class="nav-container">
-        <div class="logo">HN</div>
-        <nav>
-          <button onclick="showPage('portfolio')" class="nav-btn active">
-            Portfolio
-          </button>
-          <button onclick="showPage('dump')" class="nav-btn">Dump</button>
-          <button onclick="showPage('gems')" class="nav-btn">Gems</button>
-          <button onclick="showPage('cys')" class="nav-btn">CYS</button>
+    <div class="nav-container">
+        <a onclick="showPage('portfolio')" class="logo-image-container">
+            <img src="https://placehold.co/160x50/2563eb/ffffff?text=HOANG+NANG+LOGO&font=montserrat" 
+                 alt="Hoang Nang Logo" 
+                 class="main-logo">
+        </a>
+
+        <nav class="nav-menu">
+            <button onclick="showPage('portfolio')" class="nav-btn active">
+                <i data-lucide="layout"></i> Portfolio
+            </button>
+            <button onclick="showPage('dump')" class="nav-btn">
+                <i data-lucide="coffee"></i> Dump
+            </button>
+            <button onclick="showPage('gems')" class="nav-btn">
+                <i data-lucide="map-pin"></i> Gems
+            </button>
+            <button onclick="showPage('cys')" class="nav-btn">
+                <i data-lucide="calendar-check"></i> CYS
+            </button>
         </nav>
-        <button id="authBtn" onclick="handleAuthClick()" class="signin-btn">
-          Sign In
-        </button>
-      </div>
-    </header>
+
+        <div class="header-actions">
+            <button id="authBtn" onclick="handleAuthClick()" class="signin-btn">
+                Sign In
+            </button>
+        </div>
+    </div>
+</header>
 
     <main>
       <section id="portfolio" class="page-section active">
@@ -676,12 +690,20 @@
 
             <div class="admin-card request-card">
                 <div class="card-head blue-head">
-                    <h4>📩 Requests</h4>
-                    <div class="mini-tabs">
-                        <button onclick="renderAdminRequests('Pending')" id="tabPending" class="tab-sm active">Pending</button>
-                        <button onclick="renderAdminRequests('Approved')" id="tabApproved" class="tab-sm">Approved</button>
-                        <button onclick="renderAdminRequests('Denied')" id="tabDenied" class="tab-sm">Denied</button>
+                    <h4><i data-lucide="inbox" style="width:16px"></i> Requests</h4>
+                    
+                    <div class="status-segment">
+                        <button onclick="renderAdminRequests('Pending')" id="tabPending" class="seg-btn active">
+                            Pending
+                        </button>
+                        <button onclick="renderAdminRequests('Approved')" id="tabApproved" class="seg-btn">
+                            Approved
+                        </button>
+                        <button onclick="renderAdminRequests('Denied')" id="tabDenied" class="seg-btn">
+                            Denied
+                        </button>
                     </div>
+
                 </div>
                 <div class="card-body no-pad">
                     <div id="adminRequestList" class="request-scroll-area"></div>
